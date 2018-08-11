@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ColorFighter</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+<body>
+	 <div id="startMenuWrapper">
+        <div id="startMenu">
+            <p class='gameTitle'>ColorFighter</p>
+            <p class='gameDescribe'>Use arrows to move, colour as many fields as possible and then collect green stars.<br> Goodluck! </p>
+            <input type="text" tabindex="0" autofocus placeholder="Your Nick" id="playerNameInput" />
+            <button id="startButton">Play</button>
+        </div>
+  </div>
+    <div id="GameWrap">
+        <header id="top">
+            <p class="nameR">C</p>
+            <p class="nameO">O</p>
+            <p class="nameY">L</p>
+            <p class="nameG">O</p>
+            <p class="nameS">R</p>
+            <p class="nameB">F</p>
+            <p class="nameP">I</p>
+            <p class="nameGr">G</p>
+            <p class="namePi">H</p>
+            <p class="nameBr">T</p>
+            <p class="nameSi">!</p>
+        </header>
+        <aside id="left">
+            <ul>
+                <li>
+                    <p>User1</p>
+                </li><br>
+                <li>
+                    <p>User2</p>
+                </li><br>
+                <li>
+                    <p>User3</p>
+                </li><br>
+            </ul>
+            <button id="GameButton">start</button>
+			</aside>
+        <section id="right">
+			<div id="container">
+			</div>
+		</section>
+    </div>
+    <script src="js/game.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/render.js" type="text/javascript" charset="UTF-8"></script>
+	<script src="js/socket.js" type="text/javascript" charset="UTF-8"></script>
+	<script src="js/start.js" type="text/javascript" charset="UTF-8"></script>
+</body>
+</html>
