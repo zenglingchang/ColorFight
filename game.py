@@ -5,11 +5,12 @@ import copy
 
 import settings
 from player import Player
-
+from ai import AI
+NameList = ["Bob", "Tom", "Candy", "Monkey", "Anna"]
 class Game:
 
     def __init__(self):
-        self._count_player = 0
+        self._max_id = 0
         self._players = {}
         settings.InitColorList()
         self.running = False
@@ -26,18 +27,26 @@ class Game:
         self._world = [copy.deepcopy(temp) for i in range(settings.FIELD_SIZE_Y)]
                 
     async def new_player(self, name, ws):
-        self._count_player += 1
-        player_id = self._count_player
-        await self.send_personal(ws, "SHAKE", name, player_id)
+        self._max_id += 1
+        player_id = self._max_id
         player = Player(player_id, name, ws)
+        await self.send_personal(player, "SHAKE", name, player_id)
         self._players[player_id] = player
         return player
-    
+        
+    def new_ai(self, name):
+        self._max_id += 1
+        player_id = self._max_id
+        player = AI(player_id, name)
+        self._players[player_id] = player
+        
     def count_alive_players(self):
         return sum([int(p.alive) for p in self._players.values()])
         
     # The function will randomly generate one room and a color for each player 
     async def start_game(self):
+        while self.count_alive_players()<4:
+            self.new_ai(choice(NameList))
         self.new_world()
         self.cur_attack = {}
         self.home = {}
@@ -60,14 +69,14 @@ class Game:
                     xytemplist.append([x,y])
                     break
             while 1:
-                color = settings.kind_of_color[randint(0,4)]
+                color = choice(settings.kind_of_color)
                 flag = True
                 if color in colortemplist:
                     flag = False
                 if flag == True:
                     colortemplist.append(color)
                     break
-            player.new_game(color)
+            player.new_game(color,[x,y])
             self.cur_attack[player.get_id()] = []
             self.home[player.get_id()] = [x, y]
             self.scorelist[player.get_id()] = 0
@@ -92,13 +101,15 @@ class Game:
             if not player.alive:
                 continue
             point = self.cur_attack[player.get_id()]
+            if player.isAI:
+                player.set_attack(point,self._world)
             if not point:
-                self.filter_get_attack(player.get_id(), player.get_attack(self._world))
+                self.filter_get_attack(player.get_id(), player.get_attack())
                 continue
             region = self._world[point[0]][point[1]]
             if region[0] == player.get_id() :
                 if region[1] > settings.MAX_OCCUPY :
-                    if self.filter_get_attack(player.get_id(), player.get_attack(self._world)):
+                    if self.filter_get_attack(player.get_id(), player.get_attack()):
                         await self.send_all("REMOVE",[settings.GetColor(player.color, region[1]), point[0], [point[1]]])
                 else:
                     region[1] = int(region[1]/settings.OCCUPY_VALUE + 1)*settings.OCCUPY_VALUE + settings.OCCUPY_VALUE
@@ -112,10 +123,8 @@ class Game:
                     region[0] = player.get_id()
                     region[1] = settings.OCCUPY_VALUE
                 else:
-                    if region[2] == 'h':
-                        region[1] -= settings.OCCUPY_VALUE
                     region[1] -= settings.OCCUPY_VALUE
-                    
+                    await self.send_all("DRAWELEMENT",[settings.GetColor(region[0], region[1]), point[0], [point[1]]])
         # Reduce all region where player has occupied values
         
         for x in range(settings.FIELD_SIZE_X):
@@ -184,13 +193,19 @@ class Game:
         
     def filter_get_attack(self, id, point):
         # The point where you attack must be a neighboring point of your region
+        print("point is :")
+        print(point)
         if not point:
             return False
         flag = False
-        print("point is:")
+        print("point is :")
         print(point)
-        if point in self.cur_attack.values():
+        print("home is :")
+        print(self.home[id])
+        if point in self.cur_attack.values() or point == self.home[id]:
             return False
+        print("point is :")
+        print(point)
         if point[0]<0 or point[0]>settings.FIELD_SIZE_X or point[1]<0 or point[1]>settings.FIELD_SIZE_Y:
             return False
         for direct in settings.Direction:
@@ -203,11 +218,10 @@ class Game:
         print(self.cur_attack[id])
         return flag
             
-    async def send_personal(self, ws, *args):
+    async def send_personal(self, player, *args):
         msg = json.dumps([args])
         # print(msg)
-        await ws.send_str(msg)
-        return msg        
+        await player.send_message(msg)    
         
     async def send_all(self, *args):
         await self.send_all_multi([args])
@@ -216,5 +230,5 @@ class Game:
         msg = json.dumps(commands)
         # print(msg)
         for player in self._players.values():
-            await player._ws.send_str(msg)
+            await player.send_message(msg)
                 
