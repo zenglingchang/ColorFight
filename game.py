@@ -87,6 +87,7 @@ class Game:
     async def next_frame(self):
         renderlist = {}
         # Traverse all region where players are attacking
+        print("Traverse Attack")
         for player in self._players.values():
             if not player.alive:
                 continue
@@ -105,7 +106,8 @@ class Game:
                 if region[1] < 0 or region[0] == 0:
                     if region[2] == 'h':
                         await self.game_over(self._players[region[0]])
-                    self.scorelist[region[0]] -= 1
+                    if region[0] != 0:
+                        self.scorelist[region[0]] -= 1
                     self.scorelist[player.get_id()] += 1
                     region[0] = player.get_id()
                     region[1] = settings.OCCUPY_VALUE
@@ -113,7 +115,9 @@ class Game:
                     if region[2] == 'h':
                         region[1] -= settings.OCCUPY_VALUE
                     region[1] -= settings.OCCUPY_VALUE
+                    
         # Reduce all region where player has occupied values
+        
         for x in range(settings.FIELD_SIZE_X):
             for y in range(settings.FIELD_SIZE_Y):
                 region = self._world[x][y]
@@ -132,7 +136,7 @@ class Game:
             await self.send_all("RENDER",[color,points])
         await self.send_all("ATTACK",list(self.cur_attack.values()))
         await self.send_all("CREATEHOME",list(self.home.values()))
-        for (id,score) in scorelist.items():
+        for (id,score) in self.scorelist.items():
             await self.send_all("SCORE",[id,score])
             
         
@@ -167,6 +171,7 @@ class Game:
         self._players[args[0]].set_attack(args[1],args[2])
         
     def KeyBoardAttack(self, args):
+        print(args)
         if not self._players[args[0]].alive:
             return
         if self.cur_attack[args[0]]:

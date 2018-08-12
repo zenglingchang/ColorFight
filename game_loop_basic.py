@@ -29,6 +29,7 @@ async def wshandler(request):
         if msg.type == aiohttp.WSMsgType.TEXT:
             data = json.loads(msg.data)
             print(data)
+            print("runing is "+str(game.running))
             if game.running == False :
                 if data[0] == "NEWPLAYER":
                     player = await game.new_player(data[1],ws)
@@ -63,12 +64,12 @@ async def game_loop(game):
     while 1:
         try:
             await game.next_frame()
-        except:
-            break
+        except Exception as e:
+            print(e)
         if not game.count_alive_players():
-            print("Stopping game loop")
             break
         await asyncio.sleep(1.0/settings.GAME_SPEED)
+    print("Stopping game loop")
     game.running = False
 
 app = web.Application()
