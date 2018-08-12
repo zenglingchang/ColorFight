@@ -38,7 +38,8 @@
 				case("ATTACK"):
 					drawAttack(args[1]);
 					break
-					
+				case("SCORE"):
+					break
 				case("p_gameover"):
 					p_overId = args[1];
 					drawgameover(p_overId);

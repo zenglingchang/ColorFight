@@ -41,6 +41,7 @@ class Game:
         self.new_world()
         self.cur_attack = {}
         self.home = {}
+        self.scorelist = {}
         colortemplist = []
         xytemplist = []
         print("STARTGAME")
@@ -69,6 +70,7 @@ class Game:
             player.new_game(color)
             self.cur_attack[player.get_id()] = []
             self.home[player.get_id()] = [x, y]
+            self.scorelist[player.get_id()] = 0
             print("color is")
             print(color+" "+settings.GetColor(color, settings.MAX_OCCUPY))
             print("home is :")
@@ -83,7 +85,8 @@ class Game:
     # every region will reduced 1 value each frame
     # attck region will add 5 value each frame
     async def next_frame(self):
-        changelist = {}
+        renderlist = {}
+        # Traverse all region where players are attacking
         for player in self._players.values():
             if not player.alive:
                 continue
@@ -102,12 +105,15 @@ class Game:
                 if region[1] < 0 or region[0] == 0:
                     if region[2] == 'h':
                         await self.game_over(self._players[region[0]])
+                    self.scorelist[region[0]] -= 1
+                    self.scorelist[player.get_id()] += 1
                     region[0] = player.get_id()
                     region[1] = settings.OCCUPY_VALUE
                 else:
                     if region[2] == 'h':
                         region[1] -= settings.OCCUPY_VALUE
                     region[1] -= settings.OCCUPY_VALUE
+        # Reduce all region where player has occupied values
         for x in range(settings.FIELD_SIZE_X):
             for y in range(settings.FIELD_SIZE_Y):
                 region = self._world[x][y]
@@ -115,16 +121,20 @@ class Game:
                     region[1] -= 1
                     if settings.ColorChange(region[1]):
                         color = settings.GetColor(self._players[region[0]].color,region[1])
-                        if color in changelist.keys(): 
-                            changelist[color].append([x,y])
+                        if color in renderlist.keys(): 
+                            renderlist[color].append([x,y])
                         else:
-                            changelist[color]=[[x,y]]
-        print("changelist is ")
-        print(changelist)
-        for (color,points) in changelist.items():
+                            renderlist[color]=[[x,y]]
+        # print("Renderlist is ")
+        # print(renderlist)
+        # Send changes to each client 
+        for (color,points) in renderlist.items():
             await self.send_all("RENDER",[color,points])
         await self.send_all("ATTACK",list(self.cur_attack.values()))
         await self.send_all("CREATEHOME",list(self.home.values()))
+        for (id,score) in scorelist.items():
+            await self.send_all("SCORE",[id,score])
+            
         
     async def game_over(self, player):
         player.alive = False
@@ -138,6 +148,7 @@ class Game:
         await self.send_all("RENDER",[settings.basecolor,points])
         del self.home[player.get_id()]
         del self.cur_attack[player.get_id()]
+        del self.scorelist[player.get_id()]
         
     async def player_disconnected(self, player):
         player.ws = None
@@ -154,6 +165,7 @@ class Game:
             return
         print(args)
         self._players[args[0]].set_attack(args[1],args[2])
+        
     def KeyBoardAttack(self, args):
         if not self._players[args[0]].alive:
             return
@@ -164,6 +176,7 @@ class Game:
             x = self.home[args[0]][0] + settings.Direction[args[1]][0]
             y = self.home[args[0]][1] + settings.Direction[args[1]][1]
         self._players[args[0]].set_attack(x,y)
+        
     def filter_get_attack(self, id, point):
         # The point where you attack must be a neighboring point of your region
         if not point:
