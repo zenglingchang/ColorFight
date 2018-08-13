@@ -32,6 +32,7 @@ class Game:
         player = Player(player_id, name, ws)
         await self.send_personal(player, "SHAKE", name, player_id)
         self._players[player_id] = player
+        self.count += 1
         return player
         
     def new_ai(self, name):
@@ -39,13 +40,14 @@ class Game:
         player_id = self._max_id
         player = AI(player_id, name)
         self._players[player_id] = player
+        self.count += 1
         
     def count_alive_players(self):
         return sum([int(p.alive) for p in self._players.values()])
         
     # The function will randomly generate one room and a color for each player 
     async def start_game(self):
-        while self.count_alive_players()<4:
+        while self.count<4:
             self.new_ai(choice(NameList))
         self.new_world()
         self.cur_attack = {}
@@ -53,7 +55,6 @@ class Game:
         self.scorelist = {}
         colortemplist = []
         xytemplist = []
-        print("STARTGAME")
         for player in self._players.values():
             x = 0
             y = 0
@@ -80,8 +81,6 @@ class Game:
             self.cur_attack[player.get_id()] = []
             self.home[player.get_id()] = [x, y]
             self.scorelist[player.get_id()] = 0
-            print("color is")
-            print(color+" "+settings.GetColor(color, settings.MAX_OCCUPY))
             print("home is :")
             print([x,y])
             await self.send_all("DRAWELEMENT", [settings.GetColor(color, settings.MAX_OCCUPY), x, y])
@@ -96,11 +95,12 @@ class Game:
     async def next_frame(self):
         renderlist = {}
         # Traverse all region where players are attacking
-        print("Traverse Attack")
         for player in self._players.values():
             if not player.alive:
                 continue
+            print("id is "+str(player.get_id()))
             point = self.cur_attack[player.get_id()]
+            print("attack is :")
             if player.isAI:
                 player.set_attack(point,self._world)
             if not point:
@@ -109,6 +109,7 @@ class Game:
             region = self._world[point[0]][point[1]]
             if region[0] == player.get_id() :
                 if region[1] > settings.MAX_OCCUPY :
+                    print("change attack")
                     if self.filter_get_attack(player.get_id(), player.get_attack()):
                         await self.send_all("REMOVE",[settings.GetColor(player.color, region[1]), point[0], [point[1]]])
                 else:
@@ -141,6 +142,7 @@ class Game:
         # print("Renderlist is ")
         # print(renderlist)
         # Send changes to each client 
+        print(self.cur_attack)
         for (color,points) in renderlist.items():
             await self.send_all("RENDER",[color,points])
         await self.send_all("ATTACK",list(self.cur_attack.values()))
@@ -193,15 +195,12 @@ class Game:
         
     def filter_get_attack(self, id, point):
         # The point where you attack must be a neighboring point of your region
-        print("point is :")
+        print("filter")
         print(point)
         if not point:
             return False
         flag = False
-        print("point is :")
         print(point)
-        print("home is :")
-        print(self.home[id])
         if point in self.cur_attack.values() or point == self.home[id]:
             return False
         print("point is :")
@@ -214,7 +213,7 @@ class Game:
             if x>=0 and y>=0 and x<settings.FIELD_SIZE_X and y<settings.FIELD_SIZE_Y and self._world[x][y][0] == id:
                 flag = True
         if flag:
-            self.cur_attack[id] = point 
+            self.cur_attack[id] = copy.deepcopy(point) 
         print(self.cur_attack[id])
         return flag
             
