@@ -10,3 +10,6 @@ Desktop.ini
 *.egg-info
 dist
 build
+
+# unknown:
+.vs
