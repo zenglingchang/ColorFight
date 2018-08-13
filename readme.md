@@ -29,7 +29,7 @@ Project
 ### Usage:
 
 >- Edit your server address and Port at the end of sever.py
-`web.run_app(app, host='YOUR SERVER ADDRESS', port=YOUR PORT)`
+<br>`web.run_app(app, host='YOUR SERVER ADDRESS', port=YOUR PORT)`
 >- Change the url in initConnect function at socket.js to ServerAddress:Port/connect
 >- enter the URL into your browser's address bar ,then you will begin game
 
