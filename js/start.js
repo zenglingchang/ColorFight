@@ -13,11 +13,9 @@ window.onload = function () {
     var btn = document.getElementById('startButton'),
         nickErrorText = document.querySelector('#startMenu .input-error');
     btn.onclick = function () {
-    	var ws_url = "ws://127.0.0.1:8080/connect";
-    	ws = new WebSocket(ws_url);
+		initConnect()
     	playerName=document.getElementById('playerNameInput').value;
-    	ws.onopen = openHandler;
-    	ws.onmessage = messageHandler;
+
     };
 };
 
@@ -40,9 +38,6 @@ function StartGame(){
 	WRatio = width/(canvas.getBoundingClientRect().right - canvas.getBoundingClientRect().left);
 	console.log([WRatio,HRatio]);
 	canvas.addEventListener('click', function(e) {
-		HRatio = height/(canvas.getBoundingClientRect().bottom - canvas.getBoundingClientRect().top);
-		WRatio = width/(canvas.getBoundingClientRect().right - canvas.getBoundingClientRect().left);
-		console.log([WRatio,HRatio]);
 		x = (e.clientX - canvas.getBoundingClientRect().left)*WRatio
 		y = (e.clientY - canvas.getBoundingClientRect().top)*HRatio;
 		sendMessage(["ATTACKMOUSE", [playerId, parseInt(x), parseInt(y)]]);
