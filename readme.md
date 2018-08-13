@@ -1,7 +1,7 @@
-﻿##ColorFight 
+﻿## ColorFight 
 
 ---
-###File Description:
+### File Description:
 ```
 Project
    |----------- sever.py    //Include 
@@ -19,13 +19,13 @@ Project
    |      |--------- main.css
 ```
 
-###Prerequisites:
+### Prerequisites:
 
-- Use python 3.5+
-- Install aiohttp and async  
+>- Using python 3.5+
+>- Install aiohttp and async  
 
-###Usage:
-- Edit your server address and Port at the end of sever.py
+### Usage:
+>- Edit your server address and Port at the end of sever.py
 `web.run_app(app, host='YOUR SERVER ADDRESS', port=YOUR PORT)`
-- Change the url in initConnect function at socket.js to ServerAddress:Port/connect
-- enter the URL into your browser's address bar ,then you will begin game
+>- Change the url in initConnect function at socket.js to ServerAddress:Port/connect
+>- enter the URL into your browser's address bar ,then you will begin game
