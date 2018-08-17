@@ -27,7 +27,10 @@
 			var cmd = json[i][0];
 			switch(cmd){
 				case("SHAKE"):
-					playerId = args[2];
+					playerId = args[1];
+					break
+				case("PLAYERVALUES"):
+					setplayer(args[1]);
 					break
 				case("DRAWELEMENT"):
 					drawElement(args[1]);
@@ -37,6 +40,9 @@
 				case("CREATEHOME"):
 					drawHome(args[1]);
 					break
+				case("DEFENCE"):
+					drawDefence(args[1]);
+					break
 				case("RENDER"):
 					render(args[1]);
 					break
@@ -44,8 +50,9 @@
 					drawAttack(args[1]);
 					break
 				case("SCORE"):
+					editScoreList(args[1]);
 					break
-				case("p_gameover"):
+				case("PGAMEOVER"):
 					p_overId = args[1];
 					drawgameover(p_overId);
 					break

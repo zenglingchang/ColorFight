@@ -11,10 +11,8 @@ class AI(Player):
         
     def set_attack(self, attack, world):
         i = randint(0,3)
-        print(attack)
         if not attack:
             self._attack = [self._home[0] + Direction[i][0], self._home[1] + Direction[i][1]]
         else:
             self._attack[0] = attack[0] + Direction[i][0]
             self._attack[1] = attack[1] + Direction[i][1]
-        print(attack)

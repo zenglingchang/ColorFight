@@ -17,7 +17,9 @@ class Player:
         
     def set_attack(self, x, y):
         self._attack = [x,y]
-        print(self._attack)
+        
+    def get_name(self):
+        return self._name
         
     def get_id(self):
         return self._id

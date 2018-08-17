@@ -61,11 +61,33 @@ function drawHome(Points){
 	cxt.stroke();
 }
 
+function drawDefence(Points){
+	var canvas = document.getElementById('canvas');
+	var cxt=canvas.getContext("2d");
+	cxt.strokeStyle = 'black';
+	cxt.lineWidth = 2;
+	cxt.beginPath();
+	for(var i=0; i<Points.length; i++){
+		x=parseInt(Points[i][0])*(length+interval) + interval/2;
+		y=parseInt(Points[i][1])*(length+interval) + interval/2;
+		cxt.moveTo(x+interval/2,y+length/2);
+		cxt.lineTo(x+length-interval/2,y+length/2);
+		cxt.moveTo(x+length/2-interval,y+interval);
+		cxt.lineTo(x+length/2-interval,y+length-interval);
+		cxt.moveTo(x+length/2,y+interval);
+		cxt.lineTo(x+length/2,y+length-interval);
+		cxt.moveTo(x+length/2+interval,y+interval);
+		cxt.lineTo(x+length/2+interval,y+length-interval);
+	}
+	cxt.closePath();
+	cxt.stroke();
+}
 function drawElement(args){
 	var canvas = document.getElementById('canvas');
 	var cxt=canvas.getContext("2d");
 	cxt.strokeStyle = 'black';
 	cxt.fillStyle = args[0];
+	cxt.lineWidth=1.2;
 	x=parseInt(args[1])*(length+interval) + interval/2;
 	y=parseInt(args[2])*(length+interval) + interval/2;
 	cxt.lineWidth=1;
@@ -107,7 +129,4 @@ function render(args){
 	cxt.closePath();
 	cxt.stroke()
 	cxt.fill();
-}
-function drawgameover(Id){
-	
 }

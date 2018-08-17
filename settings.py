@@ -2,7 +2,7 @@
 FIELD_SIZE_X = 32
 FIELD_SIZE_Y = 32
 
-GAME_SPEED = 5.0
+GAME_SPEED = 6.0
 
 # Number Of Color Type 
 COLOR_LEVEL = 4

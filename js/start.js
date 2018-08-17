@@ -1,13 +1,3 @@
-const length = 25;
-const height = 32;
-const width = 32;
-const interval = 5;
-var CaWidth;
-var CaHeight;
-var playerName;
-var playerId;
-var MyColor;
-var GameArray;
 
 window.onload = function () {
     var btn = document.getElementById('startButton'),
@@ -15,7 +5,7 @@ window.onload = function () {
     btn.onclick = function () {
 		initConnect()
     	playerName=document.getElementById('playerNameInput').value;
-
+//		StartGame();
     };
 };
 
@@ -44,9 +34,13 @@ function StartGame(){
    })
 	init();
 	document.onkeydown=function(event){
-	var e = event || window.event || arguments.callee.caller.arguments[0];
-	if(e && e.keyCode>=37 && e.keyCode <= 40){ //left up right down 
-		sendMessage(["ATTAKKEYBOARD", [playerId, e.keyCode-37]]);
-	}
-}; 
+		var e = event || window.event || arguments.callee.caller.arguments[0];
+		if(e && e.keyCode>=37 && e.keyCode <= 40){ //left up right down 
+			sendMessage(["ATTAKKEYBOARD", [playerId, e.keyCode-37]]);
+		}
+		if(e && e.keyCode == 68){
+			sendMessage(["DEFENCEKEYBOARD",playerId]);
+		}
+		console.log(e.keyCode)
+	}; 
 }

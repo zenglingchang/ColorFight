@@ -43,6 +43,8 @@ async def wshandler(request):
             else:
                 if data[0] == "ATTAKKEYBOARD":
                     game.KeyBoardAttack(data[1])
+                elif data[0] == "DEFENCEKEYBOARD":
+                    game.KeyBoardDefence(data[1])
                 # elif data[0] == "ATTACKMOUSE":
                     # game.MouseAttack(data[1])
         elif msg.type == aiohttp.WSMsgType.ERROR:
@@ -62,10 +64,10 @@ async def game_loop(game):
     print("Game loop started!")
     game.running = True
     while 1:
-        try:
-            await game.next_frame()
-        except Exception as e:
-            print(e)
+        # try:
+        await game.next_frame()
+        # except Exception as e:
+            # print("exception:"+str(e))
         if not game.count_alive_players():
             break
         await asyncio.sleep(1.0/settings.GAME_SPEED)
