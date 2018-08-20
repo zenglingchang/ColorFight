@@ -1,9 +1,7 @@
-## ColorFight 
+﻿## ColorFight 
 
 ---
-
 ### File Description:
-
 ```
 Project
    |----------- sever.py    //Include 
@@ -27,9 +25,13 @@ Project
 >- Install aiohttp and async  
 
 ### Usage:
-
 >- Edit your server address and Port at the end of sever.py
-<br>`web.run_app(app, host='YOUR SERVER ADDRESS', port=YOUR PORT)`
+`web.run_app(app, host='YOUR SERVER ADDRESS', port=YOUR PORT)`
 >- Change the url in initConnect function at socket.js to ServerAddress:Port/connect
 >- enter the URL into your browser's address bar ,then you will begin game
 
+### rules:
+>- Only Up, Down, Left, Right and D keys can be used. 
+>- The value of site is determined by the time character stays and represented by color's depth, which decays with time. 
+>- When reaching the darkest color, a fence can be created (Defence is button D), and the value of the fence won't decay with time. 
+>- Earn a point for each occupation. Defeat enemies to get half of their score.

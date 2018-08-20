@@ -8,13 +8,13 @@ function init(){
 }
 
 function setplayer(args){
-	console.log(args);
-	ColorMap[args[0]] = args[1];
-	NameMap[args[0]] = args[2];
-	ScoreMap[args[0]] = 0;
+	CountOfPlayer += 1;
+	players[args[0]] = CreatePlayer(args);
+	console.log(players);
 }
+
 function editScoreList(args){
-	ScoreMap[args[0]] = args[1];
+	players[args[0]].Score.innerHTML = args[1];
 }
 function gameover(Id){
 	if( Id == playerId ){

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>ColorFighter</title>
     <link rel="stylesheet" href="css/main.css" />
+    <script src="prototype-1.3.1.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
 <body>
@@ -31,22 +32,48 @@
         </header>
         <aside id="left">
             <ul>
-                <li>
-                    <p>User1</p>
-                </li><br>
-                <li>
-                    <p>User2</p>
-                </li><br>
-                <li>
-                    <p>User3</p>
-                </li><br>
+                <div id="player1">
+                    <text id="name1" >User1</text><text id="score1" >Score1</text><br>
+                    
+                </div><br>
+                <div id="player2">
+                    <text id="name2" >User1</text><text id="score2" >Score1</text><br>
+                    
+                </div><br>
+                <div id="player3">
+                    <text id="name3" >User1</text><text id="score3" >Score1</text><br>
+                    
+                </div><br>
+                <div id="player4">        
+                    <text id="name4" >User1</text><text id="score4" >Score1</text><br>
+                </div>
             </ul>
             <button id="GameButton">start</button>
+
+            <br>
+            <br>
+            <br>
+            <ul id="rules">
+                <h1 class="rule">
+                    1. Only Up, Down, Left, Right and D keys can be used.
+                </h1>        
+                <h1 class="rule">
+                    2. The value of site is determined by the time character stays and represented by color's depth, which decays with time.
+                </h1>        
+                <h1 class="rule">
+                    3. When reaching the darkest color, a fence can be created (Defence is button D), and the value of the fence won't decay with time.
+                </h1>        
+                <h1 class="rule">
+                    4. Earn a point for each occupation. Defeat enemies to get half of their score.
+                </h1>        
+            </ul>
 			</aside>
         <section id="right">
 			<div id="container">
 			</div>
+            
 		</section>
+        
     </div>
     <script src="js/settings.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/game.js" type="text/javascript" charset="utf-8"></script>

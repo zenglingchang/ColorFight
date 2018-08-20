@@ -82,7 +82,7 @@ class Game:
             self.home[player.get_id()] = [x, y]
             self.scorelist[player.get_id()] = 0
             await self.send_all("DRAWELEMENT", [settings.GetColor(color, settings.MAX_OCCUPY), x, y])
-            await self.send_all("PLAYERVALUES",[player.get_id(),settings.GetColor(color, settings.MAX_OCCUPY),player.get_name()])
+            await self.send_all("PLAYERVALUES",[player.get_id(),settings.GetColor(color, settings.MAX_OCCUPY),player.get_name(),player.color])
             self._world[x][y][0] = player.get_id()
             self._world[x][y][1] = settings.OCCUPY_VALUE*settings.COLOR_LEVEL*2
             self._world[x][y][2] = 'h'
