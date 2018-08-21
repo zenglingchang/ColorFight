@@ -287,12 +287,17 @@ h1.rule {
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
-
+#player1 {
+    width: 100%;
+}
 #name1 {
     float: left;
 }
 #score1 {
     float:right;
+}
+#player2 {
+    width: 100%;
 }
 #name2 {
     float: left;
@@ -300,11 +305,17 @@ h1.rule {
 #score2 {
     float:right;
 }
+#player3 {
+    width: 100%;
+}
 #name3 {
     float: left;
 }
 #score3 {
     float:right;
+}
+#player4 {
+    width: 100%;
 }
 #name4 {
     float: left;

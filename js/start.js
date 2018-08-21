@@ -16,6 +16,8 @@ function StartGame(){
 	var btn = document.getElementById('GameButton');
 	btn.onclick = function(){
 		sendMessage(["STARTGAME",playerName]);
+		document.getElementById('GameButton').style.visibility = "hidden";
+		
 	}
 	var canvas = document.createElement('canvas');
 	canvas.width = width*(length + interval);

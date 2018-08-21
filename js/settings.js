@@ -26,7 +26,8 @@ function CreatePlayer(args) {
 	div.className = "progress";
 	var span = document.createElement("span");
 	span.className = args[3];
-	span.style.width = 0.1;
+	span.id = "span"+CountOfPlayer.toString();
+	span.style.width = 0.01;
 	div.appendChild(span);
 	player.p.appendChild(div);
 	return player;

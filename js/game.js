@@ -15,6 +15,7 @@ function setplayer(args){
 
 function editScoreList(args){
 	players[args[0]].Score.innerHTML = args[1];
+	document.getElementById('span'+args[0]).style.width = parseInt(args[1])/1024;
 }
 function gameover(Id){
 	if( Id == playerId ){
