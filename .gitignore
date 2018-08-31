@@ -13,3 +13,6 @@ build
 
 # unknown:
 .vs
+
+#notepad++:
+*.bak
