@@ -7,6 +7,10 @@ import settings
 from player import Player
 from ai import AI
 NameList = ["Bob", "Tom", "Candy", "Monkey", "Anna"]
+_Nofun_ = 0
+_Home_  = 1
+_Defen_ = 2
+
 class Game:
 
     def __init__(self):
@@ -23,7 +27,7 @@ class Game:
         # Example: world[x][y] == [3,15] is means that \
             # the Point locating in (x,y) is belong to player_3 and it's value is 15 
     def new_world(self):
-        temp =[copy.deepcopy([0,5,'n']) for i in range(settings.FIELD_SIZE_X)]
+        temp =[copy.deepcopy([0,5,_Nofun_]) for i in range(settings.FIELD_SIZE_X)]
         self._world = [copy.deepcopy(temp) for i in range(settings.FIELD_SIZE_Y)]
                 
     async def new_player(self, name, ws):
@@ -85,7 +89,7 @@ class Game:
             await self.send_all("PLAYERVALUES",[player.get_id(),settings.GetColor(color, settings.MAX_OCCUPY),player.get_name(),player.color])
             self._world[x][y][0] = player.get_id()
             self._world[x][y][1] = settings.OCCUPY_VALUE*settings.COLOR_LEVEL*2
-            self._world[x][y][2] = 'h'
+            self._world[x][y][2] = _Home_
         
         
         
@@ -110,17 +114,19 @@ class Game:
                     if self.filter_get_attack(player.get_id(), player.get_attack()):
                         self.RenderElement(renderlist, settings.GetColor(player.color, region[1]), point[0], point[1])
                 else:
-                    if region[2] == 'd':
+                    if region[2] == _Defen_:
                         region [1] += settings.OCCUPY_VALUE
                         self.RenderElement(renderlist, settings.GetColor(player.color, region[1]), point[0], point[1])
                         continue
                     region[1] = int(region[1]/settings.OCCUPY_VALUE + 1)*settings.OCCUPY_VALUE + settings.OCCUPY_VALUE
             else:
                 if region[1] < 0 or region[0] == 0:
-                    if region[2] == 'h':
+                    if region[2] == _Home_:
+                        self.scorelist[player.get_id()] += self.scorelist[region[0]]
                         await self.game_over(self._players[region[0]])
-                    if region[2] == 'd':
-                        region[2] = 'n'
+                        continue;
+                    if region[2] == _Defen_:
+                        region[2] = _Nofun_
                     if region[0] != 0:
                         self.scorelist[region[0]] -= 1
                     self.scorelist[player.get_id()] += 1
@@ -133,8 +139,8 @@ class Game:
         for x in range(settings.FIELD_SIZE_X):
             for y in range(settings.FIELD_SIZE_Y):
                 region = self._world[x][y]
-                if region[0]!=0 and region[1]>=settings.OCCUPY_VALUE and region[2]!='h':
-                    if region[2] == 'd':
+                if region[0]!=0 and region[1]>=settings.OCCUPY_VALUE and region[2]!=_Home_:
+                    if region[2] == _Defen_:
                         defencelist.append([x,y])
                         continue
                     region[1] -= 1
@@ -160,7 +166,7 @@ class Game:
             for y in range(len(self._world[x])):
                 if self._world[x][y][0] == player.get_id():
                     points.append([x,y])
-                    self._world[x][y] = [0,5,'n']
+                    self._world[x][y] = [0,5,_Nofun_]
         await self.send_all("RENDER",[settings.basecolor,points])
         del self.home[player.get_id()]
         del self.cur_attack[player.get_id()]
@@ -187,7 +193,7 @@ class Game:
     def KeyBoardDefence(self,Id):
         if self.cur_attack[Id] and self.GetRegion(self.cur_attack[Id])[1] > settings.MAX_OCCUPY:
             region = self.GetRegion(self.cur_attack[Id])
-            region[2] = 'd'
+            region[2] = _Defen_
             region[1] = 0
             
             
