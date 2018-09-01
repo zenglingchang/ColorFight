@@ -44,7 +44,7 @@ async def wshandler(request):
                 if data[0] == "ATTAKKEYBOARD":
                     game.KeyBoardAttack(data[1])
                 elif data[0] == "DEFENCEKEYBOARD":
-                    game.KeyBoardDefence(data[1])
+                    game.Defence(data[1])
                 # elif data[0] == "ATTACKMOUSE":
                     # game.MouseAttack(data[1])
         elif msg.type == aiohttp.WSMsgType.ERROR:

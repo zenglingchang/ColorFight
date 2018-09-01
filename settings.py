@@ -21,6 +21,15 @@ basecolor = "#F8F8FF"
 Direction = [[-1,0], [0,-1], [1,0], [0,1]]
 # Direction = [[1,0], [-1,0], [0,1], [0,-1], [1,1], [-1,1], [1,-1], [-1,-1]]
 
+# NetWork args
+n_actions = 5
+learning_rate = 0.01
+reward_decay = 0.95
+e_greedy = 0.9
+replace_target_iter = 800
+memory_size = 1000
+batch_size = 50
+
 def GetColor(color, value):
     level = 0
     for i in range(COLOR_LEVEL):

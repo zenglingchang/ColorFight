@@ -6,6 +6,7 @@ import copy
 import settings
 from player import Player
 from ai import AI
+
 NameList = ["Bob", "Tom", "Candy", "Monkey", "Anna"]
 _Nofun_ = 0
 _Home_  = 1
@@ -90,7 +91,11 @@ class Game:
             self._world[x][y][0] = player.get_id()
             self._world[x][y][1] = settings.OCCUPY_VALUE*settings.COLOR_LEVEL*2
             self._world[x][y][2] = _Home_
-        
+            
+        for player in self._players.values():
+            if player.isAI:
+                player.set_observation(self._world)
+                
         
         
     # every region will reduced 1 value each frame
@@ -103,14 +108,19 @@ class Game:
             if not player.alive:
                 continue
             point = self.cur_attack[player.get_id()]
-            if player.isAI:
-                player.set_attack(point,self._world)
             if not point:
+                if player.isAI:
+                    player.set_attack(self.cur_attack, self.scorelist[player.get_id()], self._world)
                 self.filter_get_attack(player.get_id(), player.get_attack())
                 continue
             region = self._world[point[0]][point[1]]
-            if region[0] == player.get_id() :
+            if region[0] == player.get_id():
                 if region[1] > settings.MAX_OCCUPY:
+                    # Get AI action
+                    if player.isAI and not player.set_attack(self.cur_attack, self.scorelist[player.get_id()], self._world):
+                        self.Defence(player.get_id())
+                        continue
+                        
                     if self.filter_get_attack(player.get_id(), player.get_attack()):
                         self.RenderElement(renderlist, settings.GetColor(player.color, region[1]), point[0], point[1])
                 else:
@@ -190,7 +200,7 @@ class Game:
             return
         self._players[args[0]].set_attack(args[1],args[2])
         
-    def KeyBoardDefence(self,Id):
+    def Defence(self,Id):
         if self.cur_attack[Id] and self.GetRegion(self.cur_attack[Id])[1] > settings.MAX_OCCUPY:
             region = self.GetRegion(self.cur_attack[Id])
             region[2] = _Defen_
