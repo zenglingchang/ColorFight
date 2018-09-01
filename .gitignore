@@ -14,5 +14,9 @@ build
 # unknown:
 .vs
 
+# Tensorflow:
+logs
+my_net
+
 #notepad++:
 *.bak
