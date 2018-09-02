@@ -9,8 +9,8 @@ from ai import AI
 
 NameList = ["Bob", "Tom", "Candy", "Monkey", "Anna"]
 _Nofun_ = 0
-_Home_  = 1
-_Defen_ = 2
+_Home_  = 20
+_Defen_ = -5
 
 class Game:
 
@@ -37,7 +37,8 @@ class Game:
         player = Player(player_id, name, ws)
         await self.send_personal(player, "SHAKE", player_id)
         self._players[player_id] = player
-        self.count += 1
+        if not settings.TRAN:
+            self.count += 1
         return player
         
     def new_ai(self, name):
@@ -48,12 +49,19 @@ class Game:
         self.count += 1
         
     def count_alive_players(self):
-        return sum([int(p.alive and p.isAI) for p in self._players.values()])
+        return sum([int(p.alive) for p in self._players.values()])
         
     # The function will randomly generate one room and a color for each player 
     async def start_game(self):
+        overlist = []
+        for player in self._players.values():
+            if player.isAI:
+                overlist.append(player.get_id())
+        for id in overlist:
+            self.game_over(self._players[id])
         while self.count<4:
             self.new_ai(choice(NameList))
+        await self.send_all("INIT")
         self.new_world()
         self.cur_attack = {}
         self.home = {}
@@ -61,6 +69,8 @@ class Game:
         colortemplist = []
         xytemplist = []
         for player in self._players.values():
+            if settings.TRAN and not player.isAI:
+                continue
             x = 0
             y = 0
             color = ""
@@ -69,7 +79,7 @@ class Game:
                 y = randint(0, settings.FIELD_SIZE_Y - 1)
                 flag = True
                 for p in xytemplist:
-                    if (x - p[0])**2 + (y - p[1])**2 < 50:
+                    if (x - p[0])**2 + (y - p[1])**2 < 5:
                         flag = False
                 if flag == True:
                     xytemplist.append([x,y])
@@ -91,11 +101,10 @@ class Game:
             self._world[x][y][0] = player.get_id()
             self._world[x][y][1] = settings.OCCUPY_VALUE*settings.COLOR_LEVEL*2
             self._world[x][y][2] = _Home_
-            
         for player in self._players.values():
             if player.isAI:
                 player.set_observation(self._world)
-                
+        print("number of alive :%d"%self.count_alive_players())
         
         
     # every region will reduced 1 value each frame
@@ -103,10 +112,12 @@ class Game:
     async def next_frame(self):
         renderlist = {}
         defencelist = []
+        overlist=[]
         # Traverse all region where players are attacking
         for player in self._players.values():
-            if not player.alive:
+            if not player.alive or (settings.TRAN and not player.isAI):
                 continue
+            player.cost -= 1
             point = self.cur_attack[player.get_id()]
             if not point:
                 if player.isAI:
@@ -132,20 +143,23 @@ class Game:
             else:
                 if region[1] < 0 or region[0] == 0:
                     if region[2] == _Home_:
-                        self.scorelist[player.get_id()] += self.scorelist[region[0]]
-                        await self.game_over(self._players[region[0]])
+                        self.scorelist[player.get_id()] += int(self.scorelist[region[0]]/2) + 50
+                        self.scorelist[region[0]] -= 100
+                        overlist.append(region[0])
                         continue;
+                    if region[0] != 0:
+                        self.scorelist[region[0]] -= 3 if region[2] == _Defen_ else 1
+                    self.scorelist[player.get_id()] += 2 if region[2] == _Defen_ else 1
                     if region[2] == _Defen_:
                         region[2] = _Nofun_
-                    if region[0] != 0:
-                        self.scorelist[region[0]] -= 1
-                    self.scorelist[player.get_id()] += 1
                     region[0] = player.get_id()
                     region[1] = settings.OCCUPY_VALUE
                 else:
                     region[1] -= settings.OCCUPY_VALUE
                     self.RenderElement(renderlist, settings.GetColor(player.color, region[1]), point[0], point[1])
         # Reduce all region where player has occupied values
+        for id in overlist:
+            await self.game_over(self._players[id])
         for x in range(settings.FIELD_SIZE_X):
             for y in range(settings.FIELD_SIZE_Y):
                 region = self._world[x][y]
@@ -170,6 +184,9 @@ class Game:
         
     async def game_over(self, player):
         player.alive = False
+        self.count -= 1
+        if player.isAI:
+            player.game_over(self.cur_attack, self.scorelist[player.get_id()], self._world)
         await self.send_all("PGAMEOVER",player.get_id())
         points = []
         for x in range(len(self._world)):
@@ -181,16 +198,19 @@ class Game:
         del self.home[player.get_id()]
         del self.cur_attack[player.get_id()]
         del self.scorelist[player.get_id()]
+        if player.isAI:
+            await self.del_player(player)
         
     async def player_disconnected(self, player):
         player.ws = None
         if player.alive:
             render = await self.game_over(player)
             # self.apply_render(render)
+            await self.del_player(player)
+            
+    async def del_player(self, player):
         del self._players[player._id]
         del player
-
-    
 # Assist Fuction :
     def GetRegion(self,point):
         return self._world[point[0]][point[1]]
@@ -203,6 +223,9 @@ class Game:
     def Defence(self,Id):
         if self.cur_attack[Id] and self.GetRegion(self.cur_attack[Id])[1] > settings.MAX_OCCUPY:
             region = self.GetRegion(self.cur_attack[Id])
+            if region[2] == _Defen_:
+                return
+            self.scorelist[Id] += 1
             region[2] = _Defen_
             region[1] = 0
             

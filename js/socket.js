@@ -26,6 +26,9 @@
 			var args = json[i];
 			var cmd = json[i][0];
 			switch(cmd){
+                case("INIT"):
+                    init();
+                    break
 				case("SHAKE"):
 					playerId = args[1];
 					break

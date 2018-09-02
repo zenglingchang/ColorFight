@@ -2,7 +2,7 @@
 FIELD_SIZE_X = 32
 FIELD_SIZE_Y = 32
 
-GAME_SPEED = 6.0
+GAME_SPEED = 100000.0
 
 # Number Of Color Type 
 COLOR_LEVEL = 4
@@ -21,12 +21,17 @@ basecolor = "#F8F8FF"
 Direction = [[-1,0], [0,-1], [1,0], [0,1]]
 # Direction = [[1,0], [-1,0], [0,1], [0,-1], [1,1], [-1,1], [1,-1], [-1,-1]]
 
+# translate Network or not
+TRAN = True
+
 # NetWork args
 n_actions = 5
 learning_rate = 0.01
 reward_decay = 0.95
-e_greedy = 0.9
-replace_target_iter = 800
+e_greedy = 0.50
+epsilon_increment = 0.01
+replace_target_iter = 50
+score_memory_size = 100
 memory_size = 1000
 batch_size = 50
 

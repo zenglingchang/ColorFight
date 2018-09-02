@@ -8,6 +8,21 @@ class Player:
         self._ws = ws
         self.alive = False
         self.isAI = False
+        self.observation = []
+        self.choose = -1
+        self.score = 0
+        self.cost = 0
+        
+    def tra_observation(self, world, attacklist):
+        observation = [[[1 if x[0]==self._id else 0, 1 if x[0]>0 else 0, x[1], x[2]] for x in line ] for line in world]
+        for p in attacklist:
+            attack = attacklist[p]
+            if attack:
+                observation[attack[0]][attack[1]][3] = -20
+        return observation
+        
+    def set_observation(self, world):
+        self.observation = self.tra_observation(world,[])
         
     def new_game(self,color, home):
         self.alive = True
@@ -25,6 +40,7 @@ class Player:
         return self._id
         
     def get_attack(self):
+        self.cost = 0
         return self._attack
         
     def get_ws(self):

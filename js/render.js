@@ -1,4 +1,6 @@
 function init(){
+	CountOfPlayer = 0;
+    var players = {};
 	var canvas = document.getElementById('canvas');
 	var cxt=canvas.getContext("2d");
 	cxt.lineWidth=1.2;

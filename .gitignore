@@ -17,6 +17,7 @@ build
 # Tensorflow:
 logs
 my_net
+score_memory.json
 
 #notepad++:
 *.bak

@@ -25,11 +25,11 @@ async def wshandler(request):
             msg = await ws.receive()
         except:
             break
-        print(msg)
+        #print(msg)
         if msg.type == aiohttp.WSMsgType.TEXT:
             data = json.loads(msg.data)
-            print(data)
-            print("runing is "+str(game.running))
+            #print(data)
+            #print("runing is "+str(game.running))
             if game.running == False :
                 if data[0] == "NEWPLAYER":
                     player = await game.new_player(data[1],ws)
@@ -40,7 +40,7 @@ async def wshandler(request):
                     asyncio.ensure_future(game_loop(game))
             # elif data[0] == "join_room":
                 # await game.join()
-            else:
+            else :
                 if data[0] == "ATTAKKEYBOARD":
                     game.KeyBoardAttack(data[1])
                 elif data[0] == "DEFENCEKEYBOARD":
@@ -68,8 +68,11 @@ async def game_loop(game):
         await game.next_frame()
         # except Exception as e:
             # print("exception:"+str(e))
-        if not game.count_alive_players():
-            break
+        if game.count_alive_players() == 1:
+            if settings.TRAN:
+                await game.start_game()
+            else:
+                break
         await asyncio.sleep(1.0/settings.GAME_SPEED)
     print("Stopping game loop")
     game.running = False

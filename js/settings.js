@@ -8,7 +8,6 @@ var CaWidth;
 var CaHeight;
 var playerName;
 var playerId;
-var GameArray;
 
 var players = {};
 
